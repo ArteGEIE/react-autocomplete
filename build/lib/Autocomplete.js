@@ -94,6 +94,7 @@ var Autocomplete = React.createClass({
     var _this = this;
 
     this._performAutoCompleteOnKeyUp = true;
+    this.isSearchWithoutSelect = true;
     this.setState({
       value: event.target.value
     }, function () {
@@ -111,6 +112,7 @@ var Autocomplete = React.createClass({
   keyDownHandlers: {
     ArrowDown: function ArrowDown(event) {
       event.preventDefault();
+      this.isSearchWithoutSelect = false;
       var highlightedIndex = this.state.highlightedIndex;
 
       var index = highlightedIndex === null || highlightedIndex === this.getFilteredItems().length - 1 ? 0 : highlightedIndex + 1;
@@ -123,6 +125,7 @@ var Autocomplete = React.createClass({
 
     ArrowUp: function ArrowUp(event) {
       event.preventDefault();
+      this.isSearchWithoutSelect = false;
       var highlightedIndex = this.state.highlightedIndex;
 
       var index = highlightedIndex === 0 || highlightedIndex === null ? this.getFilteredItems().length - 1 : highlightedIndex - 1;
@@ -149,14 +152,15 @@ var Autocomplete = React.createClass({
         });
       } else {
         var item = this.getFilteredItems()[this.state.highlightedIndex];
+
         this.setState({
-          value: this.props.getItemValue(item),
+          value: this.isSearchWithoutSelect ? this.searchValue : this.props.getItemValue(item),
           isOpen: false,
           highlightedIndex: null
         }, function () {
           //React.findDOMNode(this.refs.input).focus() // TODO: file issue
           React.findDOMNode(_this2.refs.input).setSelectionRange(_this2.state.value.length, _this2.state.value.length);
-          _this2.props.onSelect(_this2.state.value, item);
+          _this2.props.onSelect(_this2.state.value, _this2.isSearchWithoutSelect ? null : item);
         });
       }
     },
@@ -200,8 +204,11 @@ var Autocomplete = React.createClass({
     var matchedItem = highlightedIndex !== null ? items[highlightedIndex] : items[0];
     var itemValue = this.props.getItemValue(matchedItem);
     var itemValueDoesMatch = itemValue.toLowerCase().indexOf(this.state.value.toLowerCase()) === 0;
+
+    this.searchValue = itemValue;
     if (itemValueDoesMatch) {
       var node = React.findDOMNode(this.refs.input);
+      this.searchValue = node.value;
       var setSelection = function setSelection() {
         node.value = itemValue;
         node.setSelectionRange(_this4.state.value.length, itemValue.length);
