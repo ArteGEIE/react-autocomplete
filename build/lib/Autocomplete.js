@@ -67,7 +67,6 @@ var Autocomplete = React.createClass({
 
     if (this.state.isOpen && this._performAutoCompleteOnUpdate) {
       this._performAutoCompleteOnUpdate = false;
-      this.maybeAutoCompleteText();
     }
 
     this.maybeScrollItemIntoView();
