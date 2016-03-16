@@ -92,7 +92,7 @@ var Autocomplete = React.createClass({
   handleChange: function handleChange(event) {
     var _this = this;
 
-    this._performAutoCompleteOnKeyUp = true;
+    this._performAutoCompleteOnKeyUp = false;
     this.isSearchWithoutSelect = true;
     this.setState({
       value: event.target.value
